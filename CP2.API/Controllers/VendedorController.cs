@@ -3,6 +3,7 @@ using CP2.Domain.Entities;
 using CP2.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Threading.Tasks;
 
 namespace CP2.API.Controllers
 {
@@ -10,55 +11,72 @@ namespace CP2.API.Controllers
     [ApiController]
     public class VendedorController : ControllerBase
     {
-        private readonly IVendedorApplicationService _applicationService;
+        private readonly IVendedorService _applicationService;
 
-        public VendedorController(IVendedorApplicationService applicationService)
+        public VendedorController(IVendedorService applicationService)
         {
-            _applicationService = applicationService;   
+            _applicationService = applicationService;
         }
 
         /// <summary>
-        /// Metodo para obter todos os dados do Vendedor
+        /// Obtém todos os vendedores cadastrados.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Lista de vendedores.</returns>
+        /// <response code="200">Retorna a lista de vendedores.</response>
+        /// <response code="400">Falha ao obter vendedores.</response>
         [HttpGet]
-        [Produces<IEnumerable<VendedorEntity>>]
-        public IActionResult Get()
+        [ProducesResponseType(typeof(IEnumerable<VendedorEntity>), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        public async Task<IActionResult> Get()
         {
-            var objModel = _applicationService.ObterTodosVendedores();
+            var objModel = await _applicationService.ObterTodosVendedores();
 
             if (objModel is not null)
                 return Ok(objModel);
 
-            return BadRequest("Não foi possivel obter os dados");
+            return BadRequest("Não foi possível obter os dados.");
         }
 
-
+        /// <summary>
+        /// Obtém um vendedor pelo ID.
+        /// </summary>
+        /// <param name="id">ID do vendedor.</param>
+        /// <returns>Dados do vendedor.</returns>
+        /// <response code="200">Retorna o vendedor.</response>
+        /// <response code="400">Falha ao obter o vendedor.</response>
         [HttpGet("{id}")]
-        [Produces<VendedorEntity>]
-        public IActionResult GetPorId(int id)
+        [ProducesResponseType(typeof(VendedorEntity), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        public async Task<IActionResult> GetPorId(int id)
         {
-            var objModel = _applicationService.ObterVendedorPorId(id);
+            var objModel = await _applicationService.ObterVendedorPorId(id);
 
             if (objModel is not null)
                 return Ok(objModel);
 
-            return BadRequest("Não foi possivel obter os dados");
+            return BadRequest("Não foi possível obter os dados.");
         }
 
-
+        /// <summary>
+        /// Cadastra um novo vendedor.
+        /// </summary>
+        /// <param name="entity">Dados do vendedor a ser cadastrado.</param>
+        /// <returns>Vendedor cadastrado.</returns>
+        /// <response code="200">Vendedor cadastrado com sucesso.</response>
+        /// <response code="400">Falha ao cadastrar vendedor.</response>
         [HttpPost]
-        [Produces<VendedorEntity>]
-        public IActionResult Post([FromBody] VendedorDto entity)
+        [ProducesResponseType(typeof(VendedorEntity), 200)]
+        [ProducesResponseType(typeof(object), 400)]
+        public async Task<IActionResult> Post([FromBody] VendedorDto entity)
         {
             try
             {
-                var objModel = _applicationService.SalvarDadosVendedor(entity);
+                var objModel = await _applicationService.AddAsync(new VendedorEntity { /* Mapeie os dados do DTO para a entidade aqui */ });
 
                 if (objModel is not null)
                     return Ok(objModel);
 
-                return BadRequest("Não foi possivel salvar os dados");
+                return BadRequest("Não foi possível salvar os dados.");
             }
             catch (Exception ex)
             {
@@ -70,18 +88,27 @@ namespace CP2.API.Controllers
             }
         }
 
+        /// <summary>
+        /// Atualiza os dados de um vendedor existente.
+        /// </summary>
+        /// <param name="id">ID do vendedor a ser atualizado.</param>
+        /// <param name="entity">Novos dados do vendedor.</param>
+        /// <returns>Vendedor atualizado.</returns>
+        /// <response code="200">Vendedor atualizado com sucesso.</response>
+        /// <response code="400">Falha ao atualizar vendedor.</response>
         [HttpPut("{id}")]
-        [Produces<VendedorEntity>]
-        public IActionResult Put(int id, [FromBody] VendedorDto entity)
+        [ProducesResponseType(typeof(VendedorEntity), 200)]
+        [ProducesResponseType(typeof(object), 400)]
+        public async Task<IActionResult> Put(int id, [FromBody] VendedorDto entity)
         {
             try
             {
-                var objModel = _applicationService.EditarDadosVendedor(id, entity);
+                var vendedor = new VendedorEntity { /* Mapeie os dados do DTO para a entidade aqui */ };
+                vendedor.Id = id; // Certifique-se de que o ID está correto
 
-                if (objModel is not null)
-                    return Ok(objModel);
+                await _applicationService.UpdateAsync(vendedor);
 
-                return BadRequest("Não foi possivel salvar os dados");
+                return Ok(vendedor);
             }
             catch (Exception ex)
             {
@@ -93,17 +120,34 @@ namespace CP2.API.Controllers
             }
         }
 
-
+        /// <summary>
+        /// Remove um vendedor existente.
+        /// </summary>
+        /// <param name="id">ID do vendedor a ser removido.</param>
+        /// <returns>Status da operação de remoção.</returns>
+        /// <response code="200">Vendedor removido com sucesso.</response>
+        /// <response code="400">Falha ao remover vendedor.</response>
         [HttpDelete("{id}")]
-        [Produces<VendedorEntity>]
-        public IActionResult Delete(int id)
+        [ProducesResponseType(typeof(string), 200)]
+        [ProducesResponseType(typeof(string), 400)]
+        public async Task<IActionResult> Delete(int id)
         {
-            var objModel = _applicationService.DeletarDadosVendedor(id);
+            try
+            {
+                await _applicationService.DeleteAsync(id);
 
-            if (objModel is not null)
-                return Ok(objModel);
-
-            return BadRequest("Não foi possivel deletar os dados");
+                
+                return Ok("Vendedor removido com sucesso.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    Error = ex.Message,
+                    status = HttpStatusCode.BadRequest,
+                });
+            }
         }
+
     }
 }

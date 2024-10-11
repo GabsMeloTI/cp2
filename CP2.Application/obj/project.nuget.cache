@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "/ASyyWTkptU=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\bielm\\Source\\Repos\\checkpoint02\\CP2.Application\\CP2.Application.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\bielm\\.nuget\\packages\\fluentvalidation\\11.10.0\\fluentvalidation.11.10.0.nupkg.sha512"
+  ],
+  "logs": []
+}

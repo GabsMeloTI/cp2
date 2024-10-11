@@ -5,6 +5,7 @@ using CP2.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Oracle.EntityFrameworkCore; // Esta linha deve estar presente
 
 namespace CP2.IoC
 {
@@ -12,12 +13,13 @@ namespace CP2.IoC
     {
         public static void Start(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddDbContext<ApplicationContext>(x => {
-                x.UseOracle(configuration["ConnectionStrings:Oracle"]);
+            services.AddDbContext<ApplicationContext>(options =>
+            {
+                options.UseOracle(configuration["ConnectionStrings:DefaultConnection"]); // Use a string de conexão correta
             });
 
-
             services.AddTransient<IFornecedorRepository, FornecedorRepository>();
+            services.AddTransient<IVendedorRepository, VendedorRepository>();
         }
     }
 }

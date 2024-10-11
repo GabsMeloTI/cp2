@@ -1,10 +1,19 @@
-using CP2.IoC;
+using CP2.Data.AppData; // Importando o namespace do ApplicationContext
+using CP2.IoC; // Importando o namespace do Bootstrap
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
+// Adicione os serviços ao contêiner.
 builder.Services.AddControllers();
+
+// Configuração do DbContext
+builder.Services.AddDbContext<ApplicationContext>(options =>
+{
+    options.UseOracle(builder.Configuration["ConnectionStrings:DefaultConnection"],
+        b => b.MigrationsAssembly("CP2.API")); // Altere "CP2.API" para o nome do seu projeto de migrações
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => {
@@ -13,9 +22,12 @@ builder.Services.AddSwaggerGen(c => {
     c.IncludeXmlComments(xmlPath);
 });
 
+// Configuração do IoC (Inversão de Controle)
+Bootstrap.Start(builder.Services, builder.Configuration);
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure o pipeline de solicitação HTTP.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

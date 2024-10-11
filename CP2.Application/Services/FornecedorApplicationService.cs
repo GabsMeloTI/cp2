@@ -1,27 +1,54 @@
-﻿using CP2.Domain.Entities;
+﻿using CP2.Application.Dtos;
+using CP2.Domain.Entities;
 using CP2.Domain.Interfaces;
-using CP2.Domain.Interfaces.Dtos;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace CP2.Application.Services
 {
-    public class FornecedorApplicationService : IFornecedorApplicationService
+    public class FornecedorService : IFornecedorService
     {
-        private readonly IFornecedorRepository _repository;
+        private readonly IFornecedorRepository _fornecedorRepository;
 
-        public FornecedorApplicationService(IFornecedorRepository repository)
+        public FornecedorService(IFornecedorRepository fornecedorRepository)
         {
-            _repository = repository;
+            _fornecedorRepository = fornecedorRepository;
         }
 
-        public FornecedorEntity? DeletarDadosFornecedor(int id)
+        public async Task<FornecedorEntity> AddAsync(FornecedorEntity fornecedor)
         {
-            return _repository.DeletarDados(id);
+            return await _fornecedorRepository.AddAsync(fornecedor);
         }
 
-        public FornecedorEntity? ObterFornecedorPorId(int id)
+        public async Task<IEnumerable<FornecedorEntity>> GetAllAsync()
         {
-            return _repository.ObterPorId(id);
+            return await _fornecedorRepository.GetAllAsync();
         }
 
+        public async Task<FornecedorEntity> GetByIdAsync(int id)
+        {
+            return await _fornecedorRepository.GetByIdAsync(id);
+        }
+
+        public async Task UpdateAsync(FornecedorEntity fornecedor)
+        {
+            await _fornecedorRepository.UpdateAsync(fornecedor);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _fornecedorRepository.DeleteAsync(id);
+        }
+
+        // Implementação dos métodos em português
+        public async Task<FornecedorEntity> ObterFornecedorPorId(int id)
+        {
+            return await GetByIdAsync(id);
+        }
+
+        public async Task<IEnumerable<FornecedorEntity>> ObterTodosFornecedores()
+        {
+            return await GetAllAsync();
+        }
     }
 }
