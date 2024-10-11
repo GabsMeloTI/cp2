@@ -5,7 +5,7 @@ using CP2.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Oracle.EntityFrameworkCore; // Esta linha deve estar presente
+using Oracle.EntityFrameworkCore; 
 
 namespace CP2.IoC
 {
@@ -15,7 +15,7 @@ namespace CP2.IoC
         {
             services.AddDbContext<ApplicationContext>(options =>
             {
-                options.UseOracle(configuration["ConnectionStrings:DefaultConnection"]); // Use a string de conexão correta
+                options.UseOracle(configuration["ConnectionStrings:DefaultConnection"]); 
             });
 
             services.AddTransient<IFornecedorRepository, FornecedorRepository>();

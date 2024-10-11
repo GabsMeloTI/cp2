@@ -15,13 +15,13 @@ namespace CP2.Domain.Entities
         public string Nome { get; set; }
 
         [Required]
-        [MaxLength(14)]  // CNPJ com 14 caracteres
+        [MaxLength(14)] 
         public string CNPJ { get; set; }
 
         [MaxLength(200)]
         public string Endereco { get; set; }
 
-        [MaxLength(15)]  // Telefone com tamanho adequado
+        [MaxLength(15)]
         public string Telefone { get; set; }
 
         [EmailAddress]

@@ -40,7 +40,6 @@ namespace CP2.Application.Services
             await _fornecedorRepository.DeleteAsync(id);
         }
 
-        // Implementação dos métodos em português
         public async Task<FornecedorEntity> ObterFornecedorPorId(int id)
         {
             return await GetByIdAsync(id);

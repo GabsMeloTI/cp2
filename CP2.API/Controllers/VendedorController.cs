@@ -104,7 +104,7 @@ namespace CP2.API.Controllers
             try
             {
                 var vendedor = new VendedorEntity { /* Mapeie os dados do DTO para a entidade aqui */ };
-                vendedor.Id = id; // Certifique-se de que o ID está correto
+                vendedor.Id = id; 
 
                 await _applicationService.UpdateAsync(vendedor);
 
